@@ -7,7 +7,7 @@ from transformers import BertTokenizer, BertForSequenceClassification, AdamW, ge
 class CombinedModel(nn.Module):
     def __init__(self, bert_model_name, t5_model_name, num_classes,device):
         super(CombinedModel, self).__init__()
-        # 初始化BERT和T5的分词器和模型
+
         # self.bert_tokenizer = BertTokenizer.from_pretrained(bert_model_name)
         # self.bert_model = BertModel.from_pretrained(bert_model_name).to(device)
         # self.t5_tokenizer = AutoTokenizer.from_pretrained('t5-base')
@@ -21,7 +21,7 @@ class CombinedModel(nn.Module):
 
         self.device = device
 
-        # 创建一个额外的全连接层用于分类
+        # 创建一个额外的全连接层分类
         self.global_conv = nn.Conv2d(2,1,15,7,0)
         self.global_classifier = nn.Sequential(nn.Linear(1536, 384),
                                                 nn.Linear(384, num_classes)
