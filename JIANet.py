@@ -11,14 +11,10 @@ from tqdm.auto import tqdm
 from utils.ensemblemodels import CombinedModel
 import torch.nn as nn
 
-# 检查是否有可用的CUDA设备
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# 加载SST-2数据集
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 dataset = load_dataset('glue', 'sst2')
 
-
-# 加载分词器和模型
 tokenizer_bert = AutoTokenizer.from_pretrained('bert-base-uncased')
 tokenizer_t5 = AutoTokenizer.from_pretrained('t5-base')
 model = CombinedModel('bert-base-uncased', 't5-base', num_classes=2,device=device)
@@ -26,10 +22,8 @@ model.load_state_dict(torch.load('weights/ensembleJIAN9415.pth'),strict=False)
 
 
 
-# 定义最大序列长度
 max_length = 128
 
-# 将数据集转换为模型可接受的形式
 def tokenize_bert(batch):
     return tokenizer_bert(batch['sentence'], padding='max_length', truncation=True, max_length=max_length)
 
@@ -42,12 +36,12 @@ dataset_t5 = dataset.map(tokenize_t5, batched=True)
 dataset_bert.set_format('torch', columns=['input_ids', 'attention_mask', 'label'])
 dataset_t5.set_format('torch', columns=['input_ids', 'attention_mask', 'label'])
 
-# 初始化数据加载器
+
 data_loader_bert = DataLoader(dataset_bert['train'], batch_size=32)
 data_loader_t5 = DataLoader(dataset_t5['train'], batch_size=32)
 
 
-# 初始化优化器和学习率调度器
+
 
 num_epochs = 5
 num_training_steps = num_epochs * len(data_loader_bert)
